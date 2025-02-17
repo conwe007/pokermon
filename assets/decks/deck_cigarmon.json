@@ -1,0 +1,85 @@
+{
+    "instance_id": 0,
+    "cards": [
+        {
+            "suit": "c",
+            "value": "A"
+        },
+        {
+            "suit": "c",
+            "value": "T"
+        },
+        {
+            "suit": "c",
+            "value": "J"
+        },
+        {
+            "suit": "c",
+            "value": "Q"
+        },
+        {
+            "suit": "c",
+            "value": "K"
+        },
+        {
+            "suit": "d",
+            "value": "A"
+        },
+        {
+            "suit": "d",
+            "value": "T"
+        },
+        {
+            "suit": "d",
+            "value": "J"
+        },
+        {
+            "suit": "d",
+            "value": "Q"
+        },
+        {
+            "suit": "d",
+            "value": "K"
+        },
+        {
+            "suit": "s",
+            "value": "A"
+        },
+        {
+            "suit": "s",
+            "value": "T"
+        },
+        {
+            "suit": "s",
+            "value": "J"
+        },
+        {
+            "suit": "s",
+            "value": "Q"
+        },
+        {
+            "suit": "s",
+            "value": "K"
+        },
+        {
+            "suit": "h",
+            "value": "A"
+        },
+        {
+            "suit": "h",
+            "value": "T"
+        },
+        {
+            "suit": "h",
+            "value": "J"
+        },
+        {
+            "suit": "h",
+            "value": "Q"
+        },
+        {
+            "suit": "h",
+            "value": "K"
+        }
+    ]
+}

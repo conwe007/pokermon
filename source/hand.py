@@ -1,0 +1,118 @@
+import globals
+from card import Card
+from deck import Deck
+import csv
+
+class Hand:
+    def __init__(self):
+        self.cards = []
+        self.hand_rank = globals.HAND_RANK_ERROR
+
+        for index_card in range(globals.NUM_CARDS_HAND):
+            self.cards.append(Card(globals.CARD_ERROR, globals.CARD_ERROR))
+
+    def evaluate(self):
+        self.sort()
+        return self.getRank()
+
+    def sort(self):
+        for index_primary in range(len(self.cards) - 1):
+            for index_secondary in range(index_primary + 1, len(self.cards)):
+                if(self.cards[index_primary].value > self.cards[index_secondary].value):
+                    card_temp = self.cards[index_primary]
+                    self.cards[index_primary] = self.cards[index_secondary]
+                    self.cards[index_secondary] = card_temp
+
+    def getRank(self):
+        if self.isFlush():
+            if self.isStraight():
+                return globals.HAND_RANK_STRAIGHT_FLUSH
+            return globals.HAND_RANK_FLUSH
+        
+        if self.isStraight():
+            return globals.HAND_RANK_STRAIGHT
+        
+        counter = []
+        pairs = 0
+        triples = 0
+
+        # create a counter array to keep track of the number of instances of each card value
+        for index_counter in range(globals.NUM_VALUES):
+            counter.append(0)
+
+        # count each value
+        for index_card in range(len(self.cards)):
+            counter[self.cards[index_card].value] += 1
+
+        #check for four of a kind, three of a kind, and pairs
+        for index_counter in range(len(counter)):
+            if counter[index_counter] == 4:
+                return globals.HAND_RANK_FOUR_OF_A_KIND
+            if counter[index_counter] == 3:
+                triples += 1
+            if counter[index_counter] == 2:
+                pairs += 1
+
+        if triples == 1 and pairs == 1:
+            return globals.HAND_RANK_FULL_HOUSE
+        
+        if triples == 1:
+            return globals.HAND_RANK_THREE_OF_A_KIND
+        
+        if pairs == 2:
+            return globals.HAND_RANK_TWO_PAIR
+        
+        if pairs == 1:
+            return globals.HAND_RANK_PAIR
+
+        return globals.HAND_RANK_HIGH_CARD
+    
+    def isFlush(self):
+        if ((self.cards[0].suit == self.cards[1].suit) and
+            (self.cards[0].suit == self.cards[2].suit) and
+            (self.cards[0].suit == self.cards[3].suit) and
+            (self.cards[0].suit == self.cards[4].suit)):
+            return True
+        
+        return False
+
+    def isStraight(self):
+        if ((self.cards[0].value == globals.CARD_VALUE_ACE) and
+            (self.cards[1].value == globals.CARD_VALUE_TEN) and
+            (self.cards[2].value == globals.CARD_VALUE_JACK) and
+            (self.cards[3].value == globals.CARD_VALUE_QUEEN) and
+            (self.cards[4].value == globals.CARD_VALUE_KING)):
+            return True
+        
+        for index_cards in range(len(self.cards) - 1):
+            if self.cards[index_cards].value != (self.cards[index_cards + 1].value - 1):
+                return False
+            
+        return True
+
+    def toString(self):
+        output = ""
+
+        for index_card in range(len(self.cards)):
+            output += self.cards[index_card].toString()
+
+        return output
+
+with open("deck_text.txt", newline='') as csvfile:
+    spamreader = csv.reader(csvfile, delimiter=',',)
+    deck_text = spamreader.__next__()
+
+d = Deck()
+d.load(deck_text)
+
+h = Hand()
+ranks = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+for i in range (10000):
+    d.shuffle()
+    for index_hand in range(len(h.cards)):
+        h.cards[index_hand] = d.deal()
+    ranks[h.evaluate()] += 1
+
+print(ranks)
+

@@ -1,0 +1,61 @@
+Pokermon
+
+A pokemon clone except each "pokermon" has a unique deck.
+    This deck could be standard or could have different amounts of each playing card.
+
+At the start of a battle, each Pokermon draws a five card hand.
+    The value of the hand drawn adds special modifiers/effects to the action the pokermon takes.
+    ex. a pair doubles damage but halves healing, a flush adds lifesteal, a three of a kind makes the pokermon invulnerable this turn
+
+Pokermon have four types: clubs, spades, hearts, and diamonds
+    Club: High Attack, Low HP
+    Spade: High Speed, Low Defense
+    Heart: High HP, Low Speed
+    Diamond: High Defense, Low Attack
+
+Pokermon are strong/weak against each other depending on type
+    Club: Strong against Diamond, Weak against Heart
+    Spade: Strong against Heart, Weak against Diamond
+    Heart: Strong against Club, Weak against Spade
+    Diamond: Strong against Spade, Weak against Club
+
+Pokermon have the following stats:
+    attack: how much damage the pokermon does
+    defense: how much damage the pokermon resists
+    speed: how likely the pokermon is to go first in battle
+    hitpoints: how much damage the pokermon takes
+
+Pokermon can do one of five things on their turn: attack, defend, draw, special, switch, and flee
+    Attack: attack the other Pokermon
+    Defend: defend against an attack
+    Draw: Draw for a new poker hand
+    Special: use special move (unique to Pokermon species)
+    Switch: switch with another available pokermon
+    Flee: attempt to flee the encounter
+
+Poker hands give benefits to the actions Pokermon take
+    High Card: increase defense by 10%
+    Pair: double type strengths/weaknesses
+    Two Pair: apply special twice
+    Three of a Kind: increase defense by 30% and reflect 50% of damage taken back to attacker
+    Straight: always go first
+    Flush: cannot be killed in one hit (only will die when attacked at 1 HP)
+    Full House: increase attack by 20% and heal by 50% of damage done
+    Four of a Kind: increase attack by 50%
+    Straight Flush: increase attack and defense by 20%, relfect 30% of damage taken back to attacker, heal 30% of damage done
+
+At the beginning of a battle, both pokemon draw. On their turn, they can draw again to reroll their hand.
+
+
+
+Each time a pokermon levels up, they can modify their deck by adding/removing cards
+    When they level up, three cards are randomly generated. One of the three can be picked to add to the pokemon's deck
+    Alternatively, a card in the deck can be removed
+    Certain rare items can be consumed to add/remove cards from a pokemon's deck
+
+
+Story:
+    The game takes place in the fictional city of Los Antojos (the cravings)/San Judas (Saint Judas), based on Las Vegas.
+    The main character gets into a large amount of gambling debt, and must go around to four casinos and perform quests/favors to pay off the debt.
+    
+    
