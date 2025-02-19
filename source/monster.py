@@ -15,10 +15,10 @@ class Monster:
         #     self.moves[index_moves_json].load(moves_json[index_moves_json])
 
         self.type = pokerdex_json[monster_id]["type"]
-        self.attack = pokerdex_json[monster_id]["base"]["attack"]
-        self.defense = pokerdex_json[monster_id]["base"]["defense"]
-        self.speed = pokerdex_json[monster_id]["base"]["speed"]
-        self.hitpoints_max = pokerdex_json[monster_id]["base"]["hitpoints_max"]
+        self.attack = pokerdex_json[monster_id]["attack"]
+        self.defense = pokerdex_json[monster_id]["defense"]
+        self.speed = pokerdex_json[monster_id]["speed"]
+        self.hitpoints_max = pokerdex_json[monster_id]["hitpoints_max"]
         self.hitpoints_current = self.hitpoints_max
 
         return
@@ -86,14 +86,3 @@ class Monster:
         output += "Max Hitpoints: " + str(self.hitpoints_max) + "\n"
         output += "Deck:\n" + self.deck.toString() + "\n"
         return output
-
-
-with open("./assets/monsters/pokerdex.json", mode="r") as pokerdex:
-    pokerdex_data = pokerdex.read()
-    pokerdex_json = json.loads(pokerdex_data)
-    m = Monster(pokerdex_json, 0)
-    print(m.toString())
-
-q = m.save()
-print(q)
-

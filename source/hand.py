@@ -97,22 +97,3 @@ class Hand:
             output += self.cards[index_card].toString()
 
         return output
-
-with open("deck_text.txt", newline='') as csvfile:
-    spamreader = csv.reader(csvfile, delimiter=',',)
-    deck_text = spamreader.__next__()
-
-d = Deck()
-d.load(deck_text)
-
-h = Hand()
-ranks = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-for i in range (10000):
-    d.shuffle()
-    for index_hand in range(len(h.cards)):
-        h.cards[index_hand] = d.deal()
-    ranks[h.evaluate()] += 1
-
-print(ranks)
-
