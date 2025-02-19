@@ -67,6 +67,13 @@ class Hand:
 
         return globals.HAND_RANK_HIGH_CARD
     
+    # returns the sum of the int values (2-14) of the cards in hand
+    def getValue(self):
+        value = 0
+        for index_hand in range(len(self.cards)):
+            value += self.cards[index_hand].getValueInt()
+        return value
+
     def isFlush(self):
         if ((self.cards[0].suit == self.cards[1].suit) and
             (self.cards[0].suit == self.cards[2].suit) and

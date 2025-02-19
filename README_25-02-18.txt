@@ -1,0 +1,71 @@
+Pokermon
+
+A pokemon clone except each "pokermon" has a unique deck.
+    This deck could be standard or could have different amounts of each playing card.
+
+At the start of a battle, each Pokermon draws a five card hand.
+    The value of the hand drawn adds special modifiers/effects to the action the pokermon takes.
+    ex. a pair doubles damage but halves healing, a flush adds lifesteal, a three of a kind makes the pokermon invulnerable this turn
+
+Pokermon have four types: clubs, spades, hearts, and diamonds
+    Club: High Attack, Low HP
+    Spade: High Speed, Low Defense
+    Heart: High HP, Low Speed
+    Diamond: High Defense, Low Attack
+
+Pokermon are strong/weak against each other depending on type
+    Club: Strong against Diamond, Weak against Heart
+    Spade: Strong against Heart, Weak against Diamond
+    Heart: Strong against Club, Weak against Spade
+    Diamond: Strong against Spade, Weak against Club
+
+Pokermon do not have stats
+
+Pokermon can do one of two things on their turn: gamble, cashout
+    Gamble: choose up to five cards from hand to redraw
+        *players can only gamble up to as many cards are left in the deck
+        *if no cards are left in the deck, player must cashout
+    Cashout: apply effect of current hand, then draw five cards
+
+Damage calculation:
+    damage = ((attacker_attack / defender_defense) + 2) * type_effectiveness * same_type_bonus
+    type_effectiveness = 1.1 when (attacker == club and defender == diamond) or 
+                                (attacker == spade and defender == heart) or 
+                                (attacker == heart and defender == club) or 
+                                (attacker == diamond and defender == spade)
+    type_effectiveness = 0.9 when (attacker == club and defender == heart) or 
+                                (attacker == spade and defender == diamond) or 
+                                (attacker == heart and defender == spade) or 
+                                (attacker == diamond and defender == club)
+    type_effectiveness = 1 otherwise
+
+When Poker hands are applied, they affect the battle as described
+    High Card: attack opponent (damage = sum of card values)
+    Pair: attack opponent (damage = 2 * sum of card values)
+    Two Pair: 
+    Three of a Kind: 
+    Straight: 
+    Flush: 
+    Full House: 
+    Four of a Kind: 
+    Straight Flush: 
+
+At the beginning of a battle, both pokemon draw. On their turn, they can draw again to reroll their hand.
+
+
+
+Each time a pokermon levels up, they can modify their deck by adding/removing cards
+    When they level up, three cards are randomly generated. One of the three can be picked to add to the pokemon's deck
+    Alternatively, a card in the deck can be removed
+    Certain rare items can be consumed to add/remove cards from a pokemon's deck
+
+
+Story:
+    The game takes place in the fictional city of Los Antojos (the cravings)/San Judas (Saint Judas), based on Las Vegas.
+    The main character gets into a large amount of gambling debt, and must go around to four casinos and perform quests/favors to pay off the debt.
+    
+Save System: when the player saves the game, the following data is recorded in a file
+    story state
+    player location
+    player monsters
+    

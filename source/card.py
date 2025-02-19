@@ -12,6 +12,10 @@ class Card:
         else:
             self.suit = suit
 
+    # returns int value (2-14)
+    def getValueInt(self):
+        return globals.DICT_VALUE[globals.LUT_VALUE[self.value]]
+
     def getCardCode(self):
         return self.suit * globals.NUM_VALUES + self.value
     
