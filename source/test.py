@@ -60,4 +60,5 @@ d.shuffle()
 for index_hand in range(len(h.cards)):
     h.cards[index_hand] = d.deal()
 print(h.toString())
-print(h.getValue())
+print(h.getValue(0))
+

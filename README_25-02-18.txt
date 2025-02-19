@@ -19,7 +19,9 @@ Pokermon are strong/weak against each other depending on type
     Heart: Strong against Club, Weak against Spade
     Diamond: Strong against Spade, Weak against Club
 
-Pokermon do not have stats
+Pokermon have two stats:
+    speed: how likely the pokermon is to go first in battle
+    hitpoints: how much damage the pokermon takes
 
 Pokermon can do one of two things on their turn: gamble, cashout
     Gamble: choose up to five cards from hand to redraw
@@ -27,20 +29,13 @@ Pokermon can do one of two things on their turn: gamble, cashout
         *if no cards are left in the deck, player must cashout
     Cashout: apply effect of current hand, then draw five cards
 
-Damage calculation:
-    damage = ((attacker_attack / defender_defense) + 2) * type_effectiveness * same_type_bonus
-    type_effectiveness = 1.1 when (attacker == club and defender == diamond) or 
-                                (attacker == spade and defender == heart) or 
-                                (attacker == heart and defender == club) or 
-                                (attacker == diamond and defender == spade)
-    type_effectiveness = 0.9 when (attacker == club and defender == heart) or 
-                                (attacker == spade and defender == diamond) or 
-                                (attacker == heart and defender == spade) or 
-                                (attacker == diamond and defender == club)
-    type_effectiveness = 1 otherwise
+Hand Value calculation:
+    Each card is assigned a value (2-14) corresponding to its rank
+    cards that are the same suit as the pokermon have their value multiplied by 2
+    The sum of the five card values 
 
 When Poker hands are applied, they affect the battle as described
-    High Card: attack opponent (damage = sum of card values)
+    High Card: attack opponent (damage = hand value)
     Pair: attack opponent (damage = 2 * sum of card values)
     Two Pair: 
     Three of a Kind: 

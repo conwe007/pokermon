@@ -1,4 +1,4 @@
-LUT_VALUE = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
+LUT_RANK = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K']
 DICT_VALUE = {'2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, 'T':10, 'J':11, 'Q':12, 'K':13, 'A':14}
 LUT_SUIT = ['c', 'd', 's', 'h']
 
@@ -19,6 +19,8 @@ HAND_RANK_FULL_HOUSE = 6
 HAND_RANK_FOUR_OF_A_KIND = 7
 HAND_RANK_STRAIGHT_FLUSH = 8
 
+HAND_SAME_SUIT_BONUS = 2
+
 CARD_ERROR = -1
 CARD_VALUE_ACE = 0
 CARD_VALUE_TEN = 9
@@ -26,11 +28,11 @@ CARD_VALUE_JACK = 10
 CARD_VALUE_QUEEN = 11
 CARD_VALUE_KING = 12
 
-TYPE_ERROR = -1
-TYPE_SPADE = 0
-TYPE_HEART = 1
-TYPE_DIAMOND = 2
-TYPE_CLUB = 3
+SUIT_ERROR = -1
+SUIT_SPADE = 0
+SUIT_HEART = 1
+SUIT_DIAMOND = 2
+SUIT_CLUB = 3
 
 MOVE_POWER_ERROR = -1
 MOVE_ACCURACY_ERROR = -1

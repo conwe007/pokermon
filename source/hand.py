@@ -18,7 +18,7 @@ class Hand:
     def sort(self):
         for index_primary in range(len(self.cards) - 1):
             for index_secondary in range(index_primary + 1, len(self.cards)):
-                if(self.cards[index_primary].value > self.cards[index_secondary].value):
+                if(self.cards[index_primary].rank > self.cards[index_secondary].rank):
                     card_temp = self.cards[index_primary]
                     self.cards[index_primary] = self.cards[index_secondary]
                     self.cards[index_secondary] = card_temp
@@ -42,7 +42,7 @@ class Hand:
 
         # count each value
         for index_card in range(len(self.cards)):
-            counter[self.cards[index_card].value] += 1
+            counter[self.cards[index_card].rank] += 1
 
         #check for four of a kind, three of a kind, and pairs
         for index_counter in range(len(counter)):
@@ -67,11 +67,16 @@ class Hand:
 
         return globals.HAND_RANK_HIGH_CARD
     
+    # args - monster_suit: the suit of the monster who the hand belongs to
     # returns the sum of the int values (2-14) of the cards in hand
-    def getValue(self):
+    def getValue(self, monster_suit):
         value = 0
         for index_hand in range(len(self.cards)):
-            value += self.cards[index_hand].getValueInt()
+            print(self.cards[index_hand].getValue())
+            if(self.cards[index_hand].suit == monster_suit):
+                value += (globals.HAND_SAME_SUIT_BONUS * self.cards[index_hand].getValue())
+            else:
+                value += self.cards[index_hand].getValue()
         return value
 
     def isFlush(self):
@@ -84,15 +89,15 @@ class Hand:
         return False
 
     def isStraight(self):
-        if ((self.cards[0].value == globals.CARD_VALUE_ACE) and
-            (self.cards[1].value == globals.CARD_VALUE_TEN) and
-            (self.cards[2].value == globals.CARD_VALUE_JACK) and
-            (self.cards[3].value == globals.CARD_VALUE_QUEEN) and
-            (self.cards[4].value == globals.CARD_VALUE_KING)):
+        if ((self.cards[0].rank == globals.CARD_VALUE_ACE) and
+            (self.cards[1].rank == globals.CARD_VALUE_TEN) and
+            (self.cards[2].rank == globals.CARD_VALUE_JACK) and
+            (self.cards[3].rank == globals.CARD_VALUE_QUEEN) and
+            (self.cards[4].rank == globals.CARD_VALUE_KING)):
             return True
         
         for index_cards in range(len(self.cards) - 1):
-            if self.cards[index_cards].value != (self.cards[index_cards + 1].value - 1):
+            if self.cards[index_cards].rank != (self.cards[index_cards + 1].rank - 1):
                 return False
             
         return True
