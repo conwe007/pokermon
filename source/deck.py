@@ -9,23 +9,19 @@ class Deck:
         random.seed()
         self.cards = []
         self.index = 0
-
         for suit in range(globals.NUM_SUITS):
             for value in range(globals.NUM_VALUES):
                 self.cards.append(Card(value, suit))
-        
         return
     
     # arg deck_json - json object containing monster deck data
     def load(self, monster_deck_json):
         self.cards = []
         self.index = 0
-
         for index_deck_json in range(len(monster_deck_json)):
             value = monster_deck_json[index_deck_json]["value"]
             suit = monster_deck_json[index_deck_json]["suit"]
             self.cards.append(Card(value, suit))
-        
         return
 
     # returns the next card in the deck and increments the deck index
@@ -36,13 +32,11 @@ class Deck:
     # shuffle the deck and reset the deck index
     def shuffle(self):
         self.index = 0
-
         for index_current in range(len(self.cards)):
             index_new = random.randrange(index_current, len(self.cards))
             card_temp = self.cards[index_current]
             self.cards[index_current] = self.cards[index_new]
             self.cards[index_new] = card_temp
-        
         return
     
     # sort the deck and reset the deck index

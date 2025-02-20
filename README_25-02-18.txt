@@ -32,18 +32,30 @@ Pokermon can do one of two things on their turn: gamble, cashout
 Hand Value calculation:
     Each card is assigned a value (2-14) corresponding to its rank
     cards that are the same suit as the pokermon have their value multiplied by 2
-    The sum of the five card values 
+    The sum of the five card values including same suit bonus equals the hand value
 
-When Poker hands are applied, they affect the battle as described
-    High Card: attack opponent (damage = hand value)
-    Pair: attack opponent (damage = 2 * sum of card values)
-    Two Pair: 
-    Three of a Kind: 
-    Straight: 
-    Flush: 
-    Full House: 
-    Four of a Kind: 
+Cashout mechanics - the following effects can be applied during cashout
+    Attack X - deal damage to opponent equal to X * hand value
+    Heal X - heal self equal to X * hand value
+    Force Draw Random X - randomly select X of the opponent's cards and force them to be redrawn
+    Force Draw Target X - manually select X of the opponent's cards and force them to be redrawn
+    Lock Random X - randomly select X of the opponent's cards and prevent them from being drawn until they are cashed out
+    Lock Target X - manually select X of the opponent's cards and prevent them from being drawn until they are cashed out
+    Hold X - manually select X of your own cards to stay in your hand after this cashout (instead of being reshuffled)
+
+When Poker hands are cashed out, they affect the battle as described
+    High Card: Attack 1
+    Pair: Attack 2
+    Two Pair: Heal 2
+    Three of a Kind: Attack 3
+    Straight: Attack 1, Force Draw Random 1
+    Flush: Heal 1, Lock Target 1
+    Full House: Attack 2, Heal 1, Hold 1
+    Four of a Kind: Attack 4
     Straight Flush: 
+    Five of a Kind: 
+    Flush House: 
+    Flush Five: 
 
 At the beginning of a battle, both pokemon draw. On their turn, they can draw again to reroll their hand.
 
