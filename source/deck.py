@@ -8,6 +8,7 @@ class Deck:
     def __init__(self):
         random.seed()
         self.cards = []
+        self.cards_omitted = [] # array to keep track of cards that are held until next round
         self.index = 0
         for suit in range(globals.NUM_SUITS):
             for value in range(globals.NUM_VALUES):
@@ -32,6 +33,11 @@ class Deck:
     # shuffle the deck and reset the deck index
     def shuffle(self):
         self.index = 0
+        # put the omitted cards back in the deck
+        for index_cards_omitted in range(len(self.cards_omitted)):
+            self.cards.insert(0, self.cards_omitted[index_cards_omitted])
+        self.cards_omitted = []
+        # shuffle the deck
         for index_current in range(len(self.cards)):
             index_new = random.randrange(index_current, len(self.cards))
             card_temp = self.cards[index_current]
@@ -39,6 +45,27 @@ class Deck:
             self.cards[index_new] = card_temp
         return
     
+    # shuffle the deck and reset the deck index, ommiting those cards in the argument
+    # arg cards_omitted - a list of card objects
+    def shuffleOmit(self, cards_omitted):
+        self.index = 0
+        # put the old omitted cards back in the deck
+        for index_cards_omitted in range(len(self.cards_omitted)):
+            self.cards.insert(0, self.cards_omitted[index_cards_omitted])
+        self.cards_omitted = []
+        # remove the new omitted cards from the deck
+        for index_cards_omitted in range(len(cards_omitted)):
+            self.cards_omitted.insert(0, cards_omitted[index_cards_omitted])
+            self.cards.remove(cards_omitted[index_cards_omitted])
+        # shuffle the deck
+        for index_current in range(len(self.cards)):
+            index_new = random.randrange(index_current, len(self.cards))
+            card_temp = self.cards[index_current]
+            self.cards[index_current] = self.cards[index_new]
+            self.cards[index_new] = card_temp
+        return
+        return
+
     # sort the deck and reset the deck index
     def sort(self):
         self.index = 0
@@ -93,5 +120,8 @@ class Deck:
                 output += self.cards[index_cards].toString()
                 index_cards += 1
             output += "\n"
+        
+        for index_cards_omitted in range(len(self.cards_omitted)):
+            output += self.cards_omitted[index_cards_omitted].toString()
 
         return output

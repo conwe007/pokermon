@@ -16,7 +16,13 @@ class UI:
                 return globals.ACTION_ERROR
         return
 
+    # returns array of indicies of selected cards
     @staticmethod
     def battleSelectPlayerCards():
-        
-        return
+        cards_index_input = input("enter card indicies [0-4]: ")
+        cards_index_str = cards_index_input.split()
+        cards_index_int = []
+        for index in range(len(cards_index_str)):
+            cards_index_int.append(int(cards_index_str[index]))
+        return cards_index_int
+

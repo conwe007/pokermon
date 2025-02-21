@@ -2,6 +2,7 @@ import uuid
 import json
 import globals
 from deck import Deck
+from hand import Hand
 
 class Monster:
     def __init__(self, pokerdex_json, monster_id):
@@ -10,13 +11,29 @@ class Monster:
         self.level = 1
         self.deck = Deck()
         self.deck.load(pokerdex_json[monster_id]["deck"])
+        self.hand = Hand()
         self.type = pokerdex_json[monster_id]["type"]
         self.speed = pokerdex_json[monster_id]["speed"]
         self.hitpoints_max = pokerdex_json[monster_id]["hitpoints_max"]
         self.hitpoints_current = self.hitpoints_max
         return
     
-    def handValue():
+    # populate full hand from deck
+    def dealHand(self):
+        self.deck.shuffle()
+        for index_hand in range(len(self.hand.cards)):
+            if(not self.hand.cards[index_hand].is_held):
+                self.hand.cards[index_hand] = self.deck.deal()
+            self.hand.cards[index_hand].is_held = False
+        return
+
+    # deal card to specified hand index
+    def dealCard(self, index_hand):
+        self.hand.cards[index_hand] = self.deck.deal()
+        return
+
+    # return hand value
+    def handValue(self):
         return
 
     # load monster data from saved data in a json object
@@ -46,7 +63,10 @@ class Monster:
             
         )
         return output
-    
+
+    def toStringHand(self):
+        return self.hand.toString()
+
     def toString(self):
         output = "ID: "+ str(self.instance_id) + "\n"
         output += "Name: " + self.name + "\n"
@@ -56,4 +76,5 @@ class Monster:
         output += "Current Hitpoints: " + str(self.hitpoints_current) + "\n"
         output += "Max Hitpoints: " + str(self.hitpoints_max) + "\n"
         output += "Deck:\n" + self.deck.toString() + "\n"
+        output += "Hand: " + self.hand.toString() + "\n"
         return output

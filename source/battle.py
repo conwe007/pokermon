@@ -20,6 +20,8 @@ class Battle:
         while(not self.isFinished()):
             ### START OF BATTLE
             if(self.turn == globals.TURN_UNDETERMINED):
+                self.player.monsters[self.player_index_monster].dealHand()
+                self.opponent.monsters[self.opponent_index_monster].dealHand()
                 # player's monster is faster
                 if(self.player.monsters[self.player_index_monster].speed > self.opponent.monsters[self.opponent_index_monster].speed):
                     self.turn = globals.TURN_PLAYER
@@ -31,11 +33,18 @@ class Battle:
                     self.turn = random.choice([globals.TURN_OPPONENT, globals.TURN_PLAYER])
             ### PLAYER'S TURN
             elif(self.turn == globals.TURN_PLAYER):
+                print("Player Monster Hand: " + self.player.monsters[self.player_index_monster].hand.toString())
                 player_action = UI.battleSelectAction()
                 match player_action:
                     case globals.ACTION_DRAW:
                         print("player action draw")
-                        UI.battleSelectPlayerCards()
+                        selected_card_indicies = UI.battleSelectPlayerCards()
+                        selected_cards = []
+                        for index_card in range(len(self.player.monsters[self.player_index_monster].hand.cards)):
+                            if(index_card in selected_card_indicies):
+                                selected_cards.append(self.player.monsters[self.player_index_monster].hand.cards[index_card])
+                                self.player.monsters[self.player_index_monster].dealCard(index_card)
+                        print("Player Monster Hand: " + self.player.monsters[self.player_index_monster].hand.toString())
                     case globals.ACTION_CASHOUT:
                         print("player action cashout")
                     case globals.ACTION_ERROR:
@@ -91,7 +100,7 @@ class Battle:
 
     @staticmethod
     def opponentSelectAction():
-        action = random.choice([globals.ACTION_ATTACK, globals.ACTION_DEFEND, globals.ACTION_DRAW, globals.ACTION_SPECIAL])
+        action = random.choice([globals.ACTION_DRAW, globals.ACTION_CASHOUT])
         return action
 
     # returns true if the battle is over because one player has no more monsters with HP, false otherwise
