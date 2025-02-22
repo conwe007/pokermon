@@ -12,7 +12,7 @@ class Monster:
         self.deck = Deck()
         self.deck.load(pokerdex_json[monster_id]["deck"])
         self.hand = Hand()
-        self.type = pokerdex_json[monster_id]["type"]
+        self.suit = pokerdex_json[monster_id]["suit"]
         self.speed = pokerdex_json[monster_id]["speed"]
         self.hitpoints_max = pokerdex_json[monster_id]["hitpoints_max"]
         self.hitpoints_current = self.hitpoints_max
@@ -31,16 +31,21 @@ class Monster:
     def dealCard(self, index_hand):
         self.hand.cards[index_hand] = self.deck.deal()
         return
+    
+    # returns hand rank
+    def handRank(self):
+        hand_copy = self.hand.copy()
+        return hand_copy.evaluate()
 
     # return hand value
     def handValue(self):
-        return
+        return self.hand.value(self.suit)
 
     # load monster data from saved data in a json object
     def load(self, monster_json):
         self.name = monster_json["name"]
         self.level = monster_json["level"]
-        self.type = monster_json["type"]
+        self.suit = monster_json["suit"]
         self.speed = monster_json["speed"]
         self.hitpoints_max = monster_json["hitpoints_max"]
         self.hitpoints_current = monster_json["hitpoints_current"]
@@ -71,10 +76,14 @@ class Monster:
         output = "ID: "+ str(self.instance_id) + "\n"
         output += "Name: " + self.name + "\n"
         output += "Level: " + str(self.level) + "\n"
-        output += "Type: " + self.type + "\n"
+        output += "Suit: " + self.suit + "\n"
         output += "Speed: " + str(self.speed) + "\n"
         output += "Current Hitpoints: " + str(self.hitpoints_current) + "\n"
         output += "Max Hitpoints: " + str(self.hitpoints_max) + "\n"
         output += "Deck:\n" + self.deck.toString() + "\n"
         output += "Hand: " + self.hand.toString() + "\n"
         return output
+
+    # returns string with format "self.hitpoints_current/self.hitpoints_max"
+    def toStringHitpoints(self) -> str:
+        return str(self.hitpoints_current) + "/" + str(self.hitpoints_max)

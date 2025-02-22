@@ -2,11 +2,11 @@
     {
         "id": 0,
         "name": "Cigarmon",
-        "type": "club",
+        "suit": "club",
         "attack": 2,
         "speed": 1,
         "defense": 3,
-        "hitpoints_max": 10,
+        "hitpoints_max": 100,
         "deck": [
             {"suit": "c", "value": "A"},
             {"suit": "c", "value": "2"},
@@ -65,11 +65,11 @@
     {
         "id": 1,
         "name": "Cigarettemon",
-        "type": "spade",
+        "suit": "spade",
         "attack": 3,
         "speed": 2,
         "defense": 1,
-        "hitpoints_max": 12,
+        "hitpoints_max": 120,
         "deck": [
             {"suit": "c", "value": "A"},
             {"suit": "c", "value": "2"},

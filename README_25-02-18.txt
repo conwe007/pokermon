@@ -46,13 +46,13 @@ Cashout mechanics - the following effects can be applied during cashout
 When Poker hands are cashed out, they affect the battle as described
     High Card: Attack 1
     Pair: Attack 2
-    Two Pair: Heal 2
+    Two Pair: Attack 1, Heal 2
     Three of a Kind: Attack 3
     Straight: Attack 1, Force Draw Random 1
     Flush: Heal 1, Lock Target 1
     Full House: Attack 2, Heal 1, Hold 1
     Four of a Kind: Attack 4
-    Straight Flush: 
+    Straight Flush: Attack 3, Heal 2, Force Draw Target 1, Lock Target 1
     Five of a Kind: 
     Flush House: 
     Flush Five: 

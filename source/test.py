@@ -21,3 +21,4 @@ p2 = Player()
 p2.addMonster(m2)
 b = Battle(p1, p2)
 b.run()
+

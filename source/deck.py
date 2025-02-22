@@ -28,7 +28,10 @@ class Deck:
     # returns the next card in the deck and increments the deck index
     def deal(self):
         self.index += 1
-        return self.cards[self.index - 1]
+        if(self.index < len(self.cards)):
+            return self.cards[self.index - 1]
+        else:
+            return Card(globals.CARD_RANK_ERROR, globals.CARD_SUIT_ERROR)
     
     # shuffle the deck and reset the deck index
     def shuffle(self):

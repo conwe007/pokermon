@@ -10,7 +10,7 @@ class UI:
         match action:
             case "draw":
                 return globals.ACTION_DRAW
-            case "special":
+            case "cashout":
                 return globals.ACTION_CASHOUT
             case _:
                 return globals.ACTION_ERROR
