@@ -3,7 +3,7 @@ import globals
 from player import Player
 from monster import Monster
 from user_interface import UI
-
+from modifiers import Modifiers
 
 
 
@@ -11,25 +11,24 @@ class Battle:
     def __init__(self, player, opponent):
         random.seed()
         self.player = player
-        self.player_index_monster = 0 # index of the player monster currently in play
         self.opponent = opponent
-        self.opponent_index_monster = 0 # index of the opponent monster currently in play
         self.turn = globals.TURN_UNDETERMINED
+        self.modifiers = Modifiers()
         return
 
     def run(self):
         while(not self.isFinished()):
-            print(self.isFinished())
             ### START OF BATTLE ###
             if(self.turn == globals.TURN_UNDETERMINED):
                 # deal each monster a hand
-                self.player.monsters[self.player_index_monster].dealHand()
-                self.opponent.monsters[self.opponent_index_monster].dealHand()
+                self.player.monster.dealHand()
+                self.player.monster.hand.cards[0].is_locked = True
+                self.opponent.monster.dealHand()
                 # player's monster is faster
-                if(self.player.monsters[self.player_index_monster].speed > self.opponent.monsters[self.opponent_index_monster].speed):
+                if(self.player.monster.speed > self.opponent.monster.speed):
                     self.turn = globals.TURN_PLAYER
                 # opponent's monster is faster
-                elif(self.opponent.monsters[self.opponent_index_monster].speed > self.player.monsters[self.player_index_monster].speed):
+                elif(self.opponent.monster.speed > self.player.monster.speed):
                     self.turn = globals.TURN_OPPONENT
                 # player's and opponents monsters are equally fast, randomly determine whose turn it is
                 else:
@@ -37,7 +36,7 @@ class Battle:
 
             ### PLAYER'S TURN ###
             elif(self.turn == globals.TURN_PLAYER):
-                print("Player Monster Hand: " + self.player.monsters[self.player_index_monster].hand.toString())
+                print("Player Monster Hand: " + self.player.monster.hand.toString())
                 is_valid_action = False
                 # keep prompting until a valid action is selected
                 while(not is_valid_action):
@@ -49,159 +48,45 @@ class Battle:
                 match player_action:
                     ### PLAYER DRAW ###
                     case globals.ACTION_DRAW:
-                        is_valid_selection = False
-                        selected_card_indicies = []
-                        while(not is_valid_selection):
-                            selected_card_indicies = UI.battleSelectPlayerCards()
-                            is_valid_selection = True
-                            for index in selected_card_indicies:
-                                if(index < 0 or index >= len(self.player.monsters[self.player_index_monster].hand.cards)):
-                                    is_valid_selection = False
-                                    print("invalid selection")
+                        selected_card_indexes = self.selectCards(self.player, globals.MECHANIC_DRAW)
                         selected_cards = []
-                        for index_card in range(len(self.player.monsters[self.player_index_monster].hand.cards)):
-                            if(index_card in selected_card_indicies):
-                                selected_cards.append(self.player.monsters[self.player_index_monster].hand.cards[index_card])
-                                self.player.monsters[self.player_index_monster].dealCard(index_card)
-                        print("Player Monster Hand: " + self.player.monsters[self.player_index_monster].hand.toString())
+                        for index_card in range(globals.NUM_CARDS_HAND):
+                            if(index_card in selected_card_indexes):
+                                selected_cards.append(self.player.monster.hand.cards[index_card])
+                                self.player.monster.dealCard(index_card)
+                        print("Player Monster Hand: " + self.player.monster.hand.toString())
                     ### PLAYER CASHOUT ###
                     case globals.ACTION_CASHOUT:
-                        player_hand_rank = self.player.monsters[self.player_index_monster].handRank()
+                        player_hand_rank = self.player.monster.handRank()
                         print(globals.LUT_HAND_RANK[player_hand_rank])
+                        # clear locks on cards in hand
+                        for index_hand in range(globals.NUM_CARDS_HAND):
+                            self.player.monster.hand.cards[index_hand].is_locked = False
                         # initialize mechanic multipliers/quantities
-                        multiplier_attack = 0
-                        multiplier_healing = 0
-                        quantity_force_draw_random = 0
-                        quantity_force_draw_target = 0
-                        quantity_lock_random = 0
-                        quantity_lock_target = 0
-                        quantity_hold = 0
-                        # assign mechanic values based on hand rank
-                        match player_hand_rank:
-                            case globals.HAND_RANK_HIGH_CARD:
-                                multiplier_attack = globals.MULTIPLIER_HIGH_CARD_ATTACK
-                                multiplier_healing = globals.MULTIPLIER_HIGH_CARD_HEALING
-                                quantity_force_draw_random = globals.QUANTITY_HIGH_CARD_FORCE_DRAW_RANDOM
-                                quantity_force_draw_target = globals.QUANTITY_HIGH_CARD_FORCE_DRAW_TARGET
-                                quantity_lock_random = globals.QUANTITY_HIGH_CARD_LOCK_RANDOM
-                                quantity_lock_target = globals.QUANTITY_HIGH_CARD_LOCK_TARGET
-                                quantity_hold = globals.QUANTITY_HIGH_CARD_HOLD
-                            case globals.HAND_RANK_PAIR:
-                                multiplier_attack = globals.MULTIPLIER_PAIR_ATTACK
-                                multiplier_healing = globals.MULTIPLIER_PAIR_HEALING
-                                quantity_force_draw_random = globals.QUANTITY_PAIR_FORCE_DRAW_RANDOM
-                                quantity_force_draw_target = globals.QUANTITY_PAIR_FORCE_DRAW_TARGET
-                                quantity_lock_random = globals.QUANTITY_PAIR_LOCK_RANDOM
-                                quantity_lock_target = globals.QUANTITY_PAIR_LOCK_TARGET
-                                quantity_hold = globals.QUANTITY_PAIR_HOLD
-                            case globals.HAND_RANK_TWO_PAIR:
-                                multiplier_attack = globals.MULTIPLIER_TWO_PAIR_ATTACK
-                                multiplier_healing = globals.MULTIPLIER_TWO_PAIR_HEALING
-                                quantity_force_draw_random = globals.QUANTITY_TWO_PAIR_FORCE_DRAW_RANDOM
-                                quantity_force_draw_target = globals.QUANTITY_TWO_PAIR_FORCE_DRAW_TARGET
-                                quantity_lock_random = globals.QUANTITY_TWO_PAIR_LOCK_RANDOM
-                                quantity_lock_target = globals.QUANTITY_TWO_PAIR_LOCK_TARGET
-                                quantity_hold = globals.QUANTITY_TWO_PAIR_HOLD
-                            case globals.HAND_RANK_THREE_OF_A_KIND:
-                                multiplier_attack = globals.MULTIPLIER_THREE_OF_A_KIND_ATTACK
-                                multiplier_healing = globals.MULTIPLIER_THREE_OF_A_KIND_HEALING
-                                quantity_force_draw_random = globals.QUANTITY_THREE_OF_A_KIND_FORCE_DRAW_RANDOM
-                                quantity_force_draw_target = globals.QUANTITY_THREE_OF_A_KIND_FORCE_DRAW_TARGET
-                                quantity_lock_random = globals.QUANTITY_THREE_OF_A_KIND_LOCK_RANDOM
-                                quantity_lock_target = globals.QUANTITY_THREE_OF_A_KIND_LOCK_TARGET
-                                quantity_hold = globals.QUANTITY_THREE_OF_A_KIND_HOLD
-                            case globals.HAND_RANK_STRAIGHT:
-                                multiplier_attack = globals.MULTIPLIER_STRAIGHT_ATTACK
-                                multiplier_healing = globals.MULTIPLIER_STRAIGHT_HEALING
-                                quantity_force_draw_random = globals.QUANTITY_STRAIGHT_FORCE_DRAW_RANDOM
-                                quantity_force_draw_target = globals.QUANTITY_STRAIGHT_FORCE_DRAW_TARGET
-                                quantity_lock_random = globals.QUANTITY_STRAIGHT_LOCK_RANDOM
-                                quantity_lock_target = globals.QUANTITY_STRAIGHT_LOCK_TARGET
-                                quantity_hold = globals.QUANTITY_STRAIGHT_HOLD
-                            case globals.HAND_RANK_FLUSH:
-                                multiplier_attack = globals.MULTIPLIER_FLUSH_ATTACK
-                                multiplier_healing = globals.MULTIPLIER_FLUSH_HEALING
-                                quantity_force_draw_random = globals.QUANTITY_FLUSH_FORCE_DRAW_RANDOM
-                                quantity_force_draw_target = globals.QUANTITY_FLUSH_FORCE_DRAW_TARGET
-                                quantity_lock_random = globals.QUANTITY_FLUSH_LOCK_RANDOM
-                                quantity_lock_target = globals.QUANTITY_FLUSH_LOCK_TARGET
-                                quantity_hold = globals.QUANTITY_FLUSH_HOLD
-                            case globals.HAND_RANK_FULL_HOUSE:
-                                multiplier_attack = globals.MULTIPLIER_FULL_HOUSE_ATTACK
-                                multiplier_healing = globals.MULTIPLIER_FULL_HOUSE_HEALING
-                                quantity_force_draw_random = globals.QUANTITY_FULL_HOUSE_FORCE_DRAW_RANDOM
-                                quantity_force_draw_target = globals.QUANTITY_FULL_HOUSE_FORCE_DRAW_TARGET
-                                quantity_lock_random = globals.QUANTITY_FULL_HOUSE_LOCK_RANDOM
-                                quantity_lock_target = globals.QUANTITY_FULL_HOUSE_LOCK_TARGET
-                                quantity_hold = globals.QUANTITY_FULL_HOUSE_HOLD
-                            case globals.HAND_RANK_FOUR_OF_A_KIND:
-                                multiplier_attack = globals.MULTIPLIER_FOUR_OF_A_KIND_ATTACK
-                                multiplier_healing = globals.MULTIPLIER_FOUR_OF_A_KIND_HEALING
-                                quantity_force_draw_random = globals.QUANTITY_FOUR_OF_A_KIND_FORCE_DRAW_RANDOM
-                                quantity_force_draw_target = globals.QUANTITY_FOUR_OF_A_KIND_FORCE_DRAW_TARGET
-                                quantity_lock_random = globals.QUANTITY_FOUR_OF_A_KIND_LOCK_RANDOM
-                                quantity_lock_target = globals.QUANTITY_FOUR_OF_A_KIND_LOCK_TARGET
-                                quantity_hold = globals.QUANTITY_FOUR_OF_A_KIND_HOLD
-                            case globals.HAND_RANK_STRAIGHT_FLUSH:
-                                multiplier_attack = globals.MULTIPLIER_STRAIGHT_FLUSH_ATTACK
-                                multiplier_healing = globals.MULTIPLIER_STRAIGHT_FLUSH_HEALING
-                                quantity_force_draw_random = globals.QUANTITY_STRAIGHT_FLUSH_FORCE_DRAW_RANDOM
-                                quantity_force_draw_target = globals.QUANTITY_STRAIGHT_FLUSH_FORCE_DRAW_TARGET
-                                quantity_lock_random = globals.QUANTITY_STRAIGHT_FLUSH_LOCK_RANDOM
-                                quantity_lock_target = globals.QUANTITY_STRAIGHT_FLUSH_LOCK_TARGET
-                                quantity_hold = globals.QUANTITY_STRAIGHT_FLUSH_HOLD
-                            case globals.HAND_RANK_FIVE_OF_A_KIND:
-                                multiplier_attack = globals.MULTIPLIER_FIVE_OF_A_KIND_ATTACK
-                                multiplier_healing = globals.MULTIPLIER_FIVE_OF_A_KIND_HEALING
-                                quantity_force_draw_random = globals.QUANTITY_FIVE_OF_A_KIND_FORCE_DRAW_RANDOM
-                                quantity_force_draw_target = globals.QUANTITY_FIVE_OF_A_KIND_FORCE_DRAW_TARGET
-                                quantity_lock_random = globals.QUANTITY_FIVE_OF_A_KIND_LOCK_RANDOM
-                                quantity_lock_target = globals.QUANTITY_FIVE_OF_A_KIND_LOCK_TARGET
-                                quantity_hold = globals.QUANTITY_FIVE_OF_A_KIND_HOLD
-                            case globals.HAND_RANK_FLUSH_HOUSE:
-                                multiplier_attack = globals.MULTIPLIER_FLUSH_HOUSE_ATTACK
-                                multiplier_healing = globals.MULTIPLIER_FLUSH_HOUSE_HEALING
-                                quantity_force_draw_random = globals.QUANTITY_FLUSH_HOUSE_FORCE_DRAW_RANDOM
-                                quantity_force_draw_target = globals.QUANTITY_FLUSH_HOUSE_FORCE_DRAW_TARGET
-                                quantity_lock_random = globals.QUANTITY_FLUSH_HOUSE_LOCK_RANDOM
-                                quantity_lock_target = globals.QUANTITY_FLUSH_HOUSE_LOCK_TARGET
-                                quantity_hold = globals.QUANTITY_FLUSH_HOUSE_HOLD
-                            case globals.HAND_RANK_FLUSH_FIVE:
-                                multiplier_attack = globals.MULTIPLIER_FLUSH_FIVE_ATTACK
-                                multiplier_healing = globals.MULTIPLIER_FLUSH_FIVE_HEALING
-                                quantity_force_draw_random = globals.QUANTITY_FLUSH_FIVE_FORCE_DRAW_RANDOM
-                                quantity_force_draw_target = globals.QUANTITY_FLUSH_FIVE_FORCE_DRAW_TARGET
-                                quantity_lock_random = globals.QUANTITY_FLUSH_FIVE_LOCK_RANDOM
-                                quantity_lock_target = globals.QUANTITY_FLUSH_FIVE_LOCK_TARGET
-                                quantity_hold = globals.QUANTITY_FLUSH_FIVE_HOLD
-                            case globals.HAND_RANK_ERROR:
-                                multiplier_attack = 0
-                                multiplier_healing = 0
-                                quantity_force_draw_random = 0
-                                quantity_force_draw_target = 0
-                                quantity_lock_random = 0
-                                quantity_lock_target = 0
-                                quantity_hold = 0
-                        if(multiplier_attack != 0):
-                            damage = self.attack(self.player.monsters[self.player_index_monster], self.opponent.monsters[self.opponent_index_monster], multiplier_attack)
+                        self.modifiers.set(player_hand_rank)
+                        # apply battle mechanics
+                        if(self.modifiers.multiplier_attack != 0):
+                            damage = self.attack(self.player.monster, self.opponent.monster, self.modifiers.multiplier_attack)
                             print("Dealt " + str(damage) + " damage")
-                            if(self.opponent.monsters[self.opponent_index_monster].hitpoints_current <= 0):
+                            if(self.opponent.monster.hitpoints_current <= 0):
                                 print("Opponent monster defeated")
                             else:
-                                print("Opponent monster [" + str(self.opponent_index_monster) + "] has " + self.opponent.monsters[self.opponent_index_monster].toStringHitpoints() + " hitpoints left")
-                        if(multiplier_healing != 0):
-                            healing = self.heal(self.player.monsters[self.player_index_monster], multiplier_healing)
+                                print("Opponent monster has " + self.opponent.monster.toStringHitpoints() + " hitpoints left")
+                        if(self.modifiers.multiplier_healing != 0):
+                            healing = self.heal(self.player.monster, self.modifiers.multiplier_healing)
                             print("Healed " + str(healing) + " damage")
-                            print("Player monster [" + str(self.opponent_index_monster) + "] has " + self.player.monsters[self.player_index_monster].toStringHitpoints() + " hitpoints left")
-                        if(quantity_force_draw_random != 0):
+                            print("Player monster has " + self.player.monster.toStringHitpoints() + " hitpoints left")
+                        if(self.modifiers.quantity_force_draw_random != 0):
+                            card_indexes_force_draw = self.forceDrawRandom(self.opponent.monster, self.modifiers.quantity_force_draw_random)
+                            print("Forced draw at index(es): " + str(card_indexes_force_draw))
                             pass
-                        if(quantity_force_draw_target != 0):
+                        if(self.modifiers.quantity_force_draw_target != 0):
                             pass
-                        if(quantity_lock_random != 0):
+                        if(self.modifiers.quantity_lock_random != 0):
                             pass
-                        if(quantity_lock_target != 0):
+                        if(self.modifiers.quantity_lock_target != 0):
                             pass
-                        if(quantity_hold != 0):
+                        if(self.modifiers.quantity_hold != 0):
                             pass
                     ### PLAYER ACTION ERROR ###
                     case globals.ACTION_ERROR:
@@ -210,6 +95,7 @@ class Battle:
 
             ### OPPONENT'S TURN ###
             elif(self.turn == globals.TURN_OPPONENT):
+                print("Opponent Monster Hand: " + self.opponent.monster.hand.toString())
                 opponent_action = self.opponentSelectAction()
                 match opponent_action:
                     ### OPPONENT DRAW ###
@@ -225,7 +111,7 @@ class Battle:
             ### TURN ERROR
             else:
                 print("error: unexpected turn variable\n")
-        print("battle finished")
+        print("Battle finished")
 
     # calculate monster_attack hand value and apply hand value * multiplier damage to monster_defender
     # returns the amount of damage dealt
@@ -244,17 +130,48 @@ class Battle:
         return healing
     
     # randomly select quantity of monster_defender's hand cards and redraw them
+    # returns the indexes of the cards that were drawn
     def forceDrawRandom(self, monster_defender : Monster, quantity : int) -> None:
-        
-        return
+        cards_indexes_already_chosen = [] # this keeps track of what cards have already been chosen so we don't choose at the same index twice
+        # we only can draw as many cards as are free (not locked or held)
+        num_draws = quantity
+        num_free_cards = monster_defender.hand.numFree()
+        if(num_free_cards < quantity):
+            num_draws = num_free_cards
+        for index_draw in range(num_draws):
+            index_card_draw_is_valid = False
+            while(not index_card_draw_is_valid):
+                index_card_draw = random.randint(0, globals.NUM_CARDS_HAND - 1)
+                if(not monster_defender.hand.cards[index_card_draw].is_locked and
+                   not index_card_draw in cards_indexes_already_chosen):
+                    index_card_draw_is_valid = True
+                    cards_indexes_already_chosen.append(index_card_draw)
+            monster_defender.dealCard(index_card_draw)
+        return cards_indexes_already_chosen
     
     # prompt UI to select quanity of monster_defender's hand cards redraw them
     def forceDrawTarget(self, monster_defender : Monster, quantity : int) -> None:
         return
     
     # randomly select quantity of monster_defender's hand cards and mark them as locked
+    # returns the indexes of the cards that were locked
     def lockRandom(self, monster_defender : Monster, quantity : int) -> None:
-        return
+        cards_indexes_already_chosen = [] # this keeps track of what cards have already been chosen so we don't choose again at the same index twice
+        # we only can lock as many cards as are free (not already locked or held)
+        num_locks = quantity
+        num_free_cards = monster_defender.hand.numFree()
+        if(num_free_cards < quantity):
+            num_locks = num_free_cards
+        for index_lock in range(num_locks):
+            index_card_lock_is_valid = False
+            while(not index_card_lock_is_valid):
+                index_card_lock = random.randint(0, globals.NUM_CARDS_HAND - 1)
+                if(not monster_defender.hand.cards[index_card_lock].is_locked and
+                   not index_card_lock in cards_indexes_already_chosen):
+                    index_card_lock_is_valid = True
+                    cards_indexes_already_chosen.append(index_card_lock)
+            monster_defender.hand.cards[index_card_lock].is_locked = True
+        return cards_indexes_already_chosen
     
     # prompt UI to select quantity of monster_defender's hand cards and mark them as locked
     def lockTarget(self, monster_defender : Monster, quantity : int) -> None:
@@ -262,24 +179,44 @@ class Battle:
     
     # prompt UI to select quantity of monster_holder's hand cards and mark them as held
     def holdPlayer(self, monster_holder : Monster, quantity : int) -> None:
+
         return
     
     # AI selects quantity of monster_holder's hand cards and mark them as held
     def holdOpponent(self, monster_holder : Monster, quantity : int) -> None:
         return
 
-    # prompts UI to select from player cards, then returns an array of indicies
-    def playerSelectCards() -> list[int]:
+    # prompts UI to select from specified player's cards, then returns an array of indexes
+    # checks for whether selection is valid depends on selected mechanic
+    def selectCards(self, player : Player, mechanic : int) -> list[int]:
         is_valid_selection = False
-        selected_card_indicies = []
+        selected_card_indexes = []
         while(not is_valid_selection):
-            selected_card_indicies = UI.battleSelectPlayerCards()
+            selected_card_indexes = UI.battleSelectPlayerCards()
             is_valid_selection = True
-            for index in selected_card_indicies:
-                if(index < 0 or index >= globals.NUM_CARDS_HAND):
-                    is_valid_selection = False
-                    print("invalid selection")
-        return selected_card_indicies
+            for index in selected_card_indexes:
+                match mechanic:
+                    case globals.MECHANIC_DRAW:
+                        # cannot draw a card that is locked
+                        if(index < 0 or index >= globals.NUM_CARDS_HAND or player.monster.hand.cards[index].is_locked):
+                            is_valid_selection = False
+                            print("invalid selection")
+                    case globals.MECHANIC_FORCE_DRAW:
+                        # cannot force draw a card that is locked
+                        if(index < 0 or index >= globals.NUM_CARDS_HAND or player.monster.hand.cards[index].is_locked):
+                            is_valid_selection = False
+                            print("invalid selection")
+                    case globals.MECHANIC_LOCK:
+                        # cannot lock a card that is already locked
+                        if(index < 0 or index >= globals.NUM_CARDS_HAND or player.monster.hand.cards[index].is_locked):
+                            is_valid_selection = False
+                            print("invalid selection")
+                    case globals.MECHANIC_HOLD:
+                        # can hold any card
+                        if(index < 0 or index >= globals.NUM_CARDS_HAND):
+                            is_valid_selection = False
+                            print("invalid selection")
+        return selected_card_indexes
 
     @staticmethod
     def opponentSelectAction() -> int:
@@ -288,6 +225,6 @@ class Battle:
 
     # returns true if the battle is over because one player has no more monsters with HP, false otherwise
     def isFinished(self) -> bool:
-        if(self.player.hasLivingMonsters() and self.opponent.hasLivingMonsters()):
+        if(self.player.isAlive() and self.opponent.isAlive()):
             return False
         return True

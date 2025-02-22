@@ -85,6 +85,14 @@ class Hand:
                 value += self.cards[index_hand].getValue()
         return value
 
+    # returns the number of free cards in hand (cards that are not locked or held)
+    def numFree(self) -> int:
+        num_free_cards = 0
+        for index_hand in range(len(self.cards)):
+            if(not self.cards[index_hand].is_locked and not self.cards[index_hand].is_held):
+                num_free_cards += 1
+        return num_free_cards
+
     # returns true if the hand is a flush, false otherwise
     def isFlush(self):
         if ((self.cards[0].suit == self.cards[1].suit) and
@@ -112,4 +120,9 @@ class Hand:
         output = ""
         for index_card in range(len(self.cards)):
             output += self.cards[index_card].toString()
+            if(self.cards[index_card].is_locked):
+                output += "(l)"
+            if(self.cards[index_card].is_held):
+                output += "(h)"
+            output += "\t"
         return output

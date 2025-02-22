@@ -6,7 +6,7 @@ from monster import Monster
 class Player:
     def __init__(self):
         self.name = "Randy"
-        self.monsters = []
+        self.monster = None
         self.money = 0
         return
     
@@ -14,19 +14,15 @@ class Player:
 
         return
     
-    def addMonster(self, monster):
-        self.monsters.append(monster)
+    def setMonster(self, monster):
+        self.monster = monster
         return
     
-    def hasLivingMonsters(self):
-        for index_monster in range(len(self.monsters)):
-            if(self.monsters[index_monster].isAlive()):
-                return True
-        return False
+    def isAlive(self):
+        return self.monster.isAlive()
 
     def toString(self):
         output = "Name: " + self.name + "\n"
         output += "Money: " + str(self.money) + "\n"
-        for index_monster in range(len(self.monsters)):
-            output += "Monster[" + str(index_monster) + "]:\n" + self.monsters[index_monster].toString()
+        output += "Monster:\n" + self.monster.toString()
         return output

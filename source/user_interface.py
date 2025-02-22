@@ -20,9 +20,18 @@ class UI:
     @staticmethod
     def battleSelectPlayerCards():
         cards_index_input = input("enter card indicies [0-4]: ")
+        # empty input is interpreted as no draw desired
+        if(cards_index_input == ""):
+            return []
         cards_index_str = cards_index_input.split()
         cards_index_int = []
         for index in range(len(cards_index_str)):
-            cards_index_int.append(int(cards_index_str[index]))
+            try:
+                int(cards_index_str[index])
+            except:
+                print("invalid input")
+            else:
+                if(not int(cards_index_str[index]) in cards_index_int):
+                    cards_index_int.append(int(cards_index_str[index]))
         return cards_index_int
 
